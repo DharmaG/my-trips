@@ -28,10 +28,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(layouts);
 
-// const index = require('./routes/index');
-// app.use('/', index);
+const index = require('./routes/index');
+app.use('/', index);
 const myTripsRoutes = require('./routes/trips-api-router');
-app.use('/', myTripsRoutes);
+app.use('/trips', myTripsRoutes);
 
 
 

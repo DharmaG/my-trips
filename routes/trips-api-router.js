@@ -6,17 +6,20 @@ const router = express.Router();
 
 router.get('/trips', (req, res, next) => {
   TripModel.find()
-  (err, recentTrips) => {
+  .limit(20)
+  .sort({_id:-1})
+  .exec
+  ((err, recentTrips) => {
     if(err) {
       console.log('Error finding trips', err);
       res.status(500).json({errorMessage: 'Finding trips went wrong'});
       return;
     }
     res.status(200).json(recentTrips);
-  }
+  });
 });
 
-router.post('trips', (req, res, next) => {
+router.post('/trips', (req, res, next) => {
   // if (!req.user) {
   //     res.status(401).json({ errorMessage: 'Not loged in.' });
   //     return;
@@ -47,3 +50,5 @@ router.post('trips', (req, res, next) => {
     });
 
 });
+
+module.exports = router;
