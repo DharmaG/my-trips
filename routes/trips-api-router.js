@@ -6,8 +6,8 @@ const router = express.Router();
 
 router.get('/trips', (req, res, next) => {
   TripModel.find()
-  .limit(20)
-  .sort({_id:-1})
+  // .limit(20)
+  // .sort({_id:-1})
   .exec
   ((err, recentTrips) => {
     if(err) {
@@ -49,6 +49,73 @@ router.post('/trips', (req, res, next) => {
       res.status(200).json(theTrip);
     });
 
+});
+
+router.get('/trips/:tripId', (req, res, next) => {
+  TripModel.findById(
+    req.params.tripId,
+    (err, tripFromDB) => {
+      if (err) {
+        console.log('Trip details ERROR');
+        res.status(500).json({ errorMessage: 'Trip details went wrong'});
+        return;
+      }
+      res.status(200).json(tripFromDB);
+    }
+  );
+});
+
+router.put('/trips/:tripId', (req, res, next) => {
+  TripModel.findById(
+    res.params.tripId,
+    (err, tripFromDB) => {
+      if (err) {
+      console.log('Trip details ERROR');
+      res.status(500).json({ errorMessage: 'Trip details went wrong' });
+      return;
+    }
+    tripFromDB.set({
+      name:  req.body.tripName,
+      image: req.body.tripImage,
+      date:  req.body.tripDate
+    });
+
+    tripFromDB.save((err) => {
+      if (tripFromDB.errors) {
+        res.status(400).json({
+          errorMessage: 'Validation failed',
+          validationErrors: tripFromDB.errors
+        });
+        return;
+      }
+
+      if (err) {
+        console.log('Trip details ERROR');
+        res.status(500).json({ errorMessage: 'Trip details went wrong' });
+        return;
+      }
+
+      res.status(200).json(tripFromDB);
+
+    });
+    }
+  );
+});
+
+
+router.delete('/trips/:tripId', (req, res, next) => {
+
+  TripModel.findByIdAndRemove(
+    req.params.tripId,
+    (err, tripFromDB) => {
+      if (err) {
+        console.log('Trip delete ERROR', err);
+        res.status(500).json({ errorMessage: 'Trip delete went wrong' });
+        return;
+      }
+      res.status(200).json(tripFromDB);
+    }
+  );
 });
 
 module.exports = router;
