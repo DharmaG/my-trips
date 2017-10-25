@@ -6,6 +6,8 @@ const cookieParser = require('cookie-parser');
 const bodyParser   = require('body-parser');
 const layouts      = require('express-ejs-layouts');
 const mongoose     = require('mongoose');
+const cors         = require('cors');
+const session      = require('express-session');
 
 
 mongoose.connect('mongodb://localhost/trips-express');
@@ -28,10 +30,22 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(layouts);
 
-const index = require('./routes/index');
-app.use('/', index);
+app.use(cors({
+  credentials: true,
+  origin: ['http://localhost:4200']
+}
+));
+app.use(session({
+  secret: 'trips auth ',
+  resave: true,
+  saveUninitialized: true
+}));
+
+
+// const index = require('./routes/index');
+// app.use('/', index);
 const myTripsRoutes = require('./routes/trips-api-router');
-app.use('/trips', myTripsRoutes);
+app.use('/api', myTripsRoutes);
 
 
 
